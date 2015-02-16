@@ -1,0 +1,183 @@
+% Created 2015-02-08 Sun 12:29
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1.5cm,bmargin=1.5cm,lmargin=1.5cm,rmargin=1.5cm,columnsep=0.8cm}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fouriernc}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{framed}
+\tolerance=1000
+\providecommand{\alert}[1]{\textbf{#1}}
+\usepackage{enumitem}
+
+\begin{document}
+
+\begin{center}
+\huge EECE7398 --- Compilers
+
+Assignment 3
+
+\vskip1cm
+
+\normalsize\ttfamily Bruno S M M Morais <soutomaiormunizmo.b@husky.neu.edu>
+
+%All code can be found on \url{https://bitbucket.org/brunosmmm/eece7352code_public}
+
+\end{center}
+
+\vskip1cm
+
+\section*{Question 1}
+\subsection*{item (a)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{4cm}l}
+\bfseries Lexeme         & \bfseries  Token                    \\
+\hline
+ float          &  <float\_t>                \\
+ limitedSquare  &  <id, ``limitedSquare''>  \\
+ (              &  <open\_par>                 \\
+ float          &  <float\_t>                \\
+ x              &  <id, ``x''>              \\
+ )              &  <close\_par>                \\
+ \{             &  <open\_br>                 \\
+ return         &  <func\_ret>               \\
+ (              &  <open\_pr>                 \\
+ x              &  <id, ``x''>              \\
+ <=             &  <op\_lte>                 \\
+ -10.0          &  <num, -10>               \\
+ ||             &  <op\_or>                  \\
+ x              &  <id, ``x''>              \\
+ >=             &  <op\_gte>                 \\
+ 10.0           &  <num, 10>                \\
+ )              &  <close\_par>                \\
+ ?              &  <op\_bool>                \\
+ 100            &  <num, 100>               \\
+  :             &  <op\_boolsep>             \\
+ x              &  <id, ``x''>              \\
+ \**              &  <op\_mult>                \\
+ x              &  <id, ``x''>              \\
+ ;              &  <semicolon>              \\
+ \}             &  <close\_br>                \\
+\end{tabular}
+\end{table}
+
+\subsection*{item (b)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\bfseries  Token type (Regular definition)  & \bfseries  Regular expression               \\
+\hline
+ float\_t     &  float               \\
+ id          &  [a-zA-Z][a-zA-Z\_]*  \\
+ open\_par      &  ``(''               \\
+ close\_par     &  ``)''               \\
+ open\_br      &  \{                  \\
+ close\_br     &  \}                  \\
+ func\_ret    &  return              \\
+ op\_lte      &  <=                  \\
+ num         &  -?[0-9]+(.[0-9]+)?  \\
+ op\_or       &  ||           \\
+ op\_gte      &  >=                  \\
+ op\_bool     &  ``?''               \\
+ op\_boolsep  &  :                   \\
+ op\_mult     &  ``*''               \\
+ semicolon   &  ;                   \\
+\end{tabular}
+\end{table}
+
+
+\section*{Question 2}
+\subsection*{item (a)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{6cm}l}
+\bfseries  Lexeme                       &  \bfseries Token                                    \\
+\hline
+ `Hello, how are '             &  <string, ``Hello, how are ''>            \\
+ <                            &  <tag\_open>                               \\
+ b                            &  <tag\_b>                                  \\
+ >                            &  <tag\_close>                              \\
+ `you'                        &  <string, ``you''>                        \\
+ <                            &  <tag\_open>                               \\
+ /                            &  <tag\_end>                                \\
+ b                            &  <tag\_b>                                  \\
+ >                            &  <tag\_close>                              \\
+ `?'                          &  <string, ``?''>                          \\
+ <                            &  <tag\_open>                               \\
+ p                            &  <tag\_p>                                  \\
+ >                            &  <tag\_close>                              \\
+ `This is an image: '         &  <string, ``This is an image: ''>         \\
+ <                            &  <tag\_open>                               \\
+ img                          &  <tag\_img>                                \\
+ src                          &  <attr\_src>                               \\
+ =                            &  <assign>                                 \\
+ ```pic.jpg'''                  &  <value, ``pic.jpg''>                     \\
+ >                            &  <tag\_close>                              \\
+ <                            &  <tag\_open>                               \\
+ br                           &  <tag\_br>                                 \\
+ >                            &  <tag\_close>                              \\
+ `And this is a hyperlink: '  &  <string, ``And this is a hyperlink: ''>  \\
+ <                            &  <tag\_open>                               \\
+ a                            &  <tag\_a>                                  \\
+ href                         &  <attr\_href>                              \\
+ =                            &  <assign>                                 \\
+ ```site.html'''                &  <value, ``site.html''>                   \\
+ >                            &  <tag\_close>                              \\
+ `Click here'                 &  <string, ``Click here''                  \\
+ <                            &  <tag\_open>                               \\
+ /                            &  <tag\_end>                                \\
+ a                            &  <tag\_a>                                  \\
+ >                            &  <tag\_close>                              \\
+ <                            &  <tag\_open>                               \\
+ /                            &  <tag\_end>                                \\
+ p                            &  <tag\_p>                                  \\
+ >                            &  <tag\_close>                              \\
+\end{tabular}
+\end{table}
+  
+\subsection*{item (b)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\bfseries  Token type (Regular definition)  & \bfseries  Regular expression             \\
+\hline
+ string      &  [\^{}<]*             \\
+ tag\_open    &  <                 \\
+ tag\_close   &  >                 \\
+ tag\_end     &  /                 \\
+ tag\_a       &  a                 \\
+ tag\_b       &  b                 \\
+ tag\_p       &  p                 \\
+ tag\_br      &  br                \\
+ tag\_img     &  img               \\
+ attr\_src    &  src               \\
+ attr\_href   &  href              \\
+ assign      &  =                 \\
+ value       &  \textbackslash``[a-zA-Z0-9]*\textbackslash''  \\
+\end{tabular}
+\end{table}
+
+
+\section*{Question 3}
+\begin{enumerate}[label=\bfseries (\alph*)]
+
+\item \fbox{[\^{}aeiou]*a[\^{}aeiou]*e[\^{}aeiou]*i[\^{}aeiou]*o[\^{}aeiou]*u}
+
+\item \fbox{a*b*c*d*e*f*g*}
+
+\item \fbox{([\^{}0]*0+[\^{}0]*)+}
+
+\end{enumerate}
+
+\end{document}
