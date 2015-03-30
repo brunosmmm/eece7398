@@ -1,0 +1,244 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1.5cm,bmargin=1.5cm,lmargin=1.5cm,rmargin=1.5cm,columnsep=0.8cm}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fouriernc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{framed}
+\tolerance=1000
+\usepackage{enumitem}
+\usepackage{multicol}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,positioning,fit,shapes}
+ 
+\begin{document}
+
+\begin{center}
+\huge EECE7398 --- Compilers
+
+Assignment 6
+
+\vskip1cm
+
+\normalsize\ttfamily Bruno S M M Morais <soutomaiormunizmo.b@husky.neu.edu>
+
+All code can be found on \url{https://github.com/brunosmmm/eece7398}
+
+\end{center}
+
+\vskip0.5cm
+
+\section*{Question 1}
+\subsection*{item (a)}
+
+The \textsc{First} and \textsc{Follow} set for the nonterminals:
+
+\begin{multicols}{2}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c | c}
+ & \textsc{First} \\
+\hline
+F' & ty \\
+F  & ty \\
+A  & ty $\varepsilon$  \\
+B  & , $\varepsilon$  \\
+\hline
+\end{tabular}
+\end{table}
+
+\columnbreak
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c | c}
+ & \textsc{Follow} \\
+\hline
+F' & \$ \\
+F  & \$ \\
+A  & ) \\
+B  & ) , \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{multicols}
+
+\subsection*{item (b)}
+
+\begin{multicols}{2}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ l c }
+$I_{0}$ & \\
+\hline
+$F' \rightarrow \cdot F$ & $\xrightarrow{F} I_{1}$ \\
+$F \rightarrow \cdot ty \; id \; \left( A\right)$ & $\xrightarrow{ty} I_{2}$ \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{1}$ & \\
+\hline
+$F' \rightarrow F \cdot$ \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{2}$ & \\
+\hline
+$F \rightarrow ty \cdot \; id \; \left( A\right)$ & $\xrightarrow{id} I_{3}$    
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{l c}
+    $I_{3}$ & \\
+\hline
+$F \rightarrow ty \; id \cdot \; \left( A\right)$ & $\xrightarrow{(} I_{4}$
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{4}$ & \\
+\hline
+$F \rightarrow ty \; id \; \left( \cdot A\right)$ & $\xrightarrow{A} I_{5}$ \\
+$A \rightarrow \cdot ty \; id \; B$ & $\xrightarrow{ty} I_{6}$ \\
+$A \rightarrow \varepsilon$    
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{5}$ & \\
+\hline
+$F \rightarrow ty \; id \; \left( A \cdot \right)$ & $\xrightarrow{)} I_{7}$    
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{6}$ & \\
+\hline
+$A \rightarrow ty \cdot \; id \; B$ & $\xrightarrow{id} I_{8}$    
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{7}$ & \\
+\hline
+$F \rightarrow ty \; id \; \left( A\right) \cdot$ &     
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{8}$ & \\
+\hline
+$A \rightarrow ty \; id \cdot \; B$ & $\xrightarrow{B} I_{9}$ \\
+$B \rightarrow \cdot , \; ty \; id \; B$ & $\xrightarrow{,} I_{10}$ \\
+$B \rightarrow \varepsilon$ & 
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{9}$ & \\
+\hline
+$A \rightarrow ty \; id \; B \cdot$ &     
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{10}$ & \\
+\hline
+$B \rightarrow , \; \cdot ty \; id \; B$ & $\xrightarrow{ty} I_{11}$    
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{11}$ & \\
+\hline
+$B \rightarrow , \; ty \cdot \; id \; B$ & $\xrightarrow{id} I_{12}$    
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{12}$ & \\
+\hline
+$B \rightarrow , \; ty \; id \cdot \; B$ & $\xrightarrow{B} I_{13}$ \\
+$B \rightarrow \cdot , \; ty \; id \; B$ & $\xrightarrow{,} I_{10}$ \\
+$B \rightarrow \varepsilon$ &    
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l c}
+$I_{13}$ & \\
+\hline
+$B \rightarrow ty , \; \; id \; B \cdot$ &    
+\end{tabular}
+\end{table}
+
+\end{multicols}
+
+\subsection*{item (c)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c | c c c c c c | c c c}
+State & ty  & id  & (  & )  & ,   & \$     & F & A & B  \\
+\hline
+0     & S2  &     &    &    &     &        & 1 &   &    \\
+1     &     &     &    &    &     & Accept &   &   &    \\
+2     &     & S3  &    &    &     &        &   &   &    \\
+3     &     &     & S4 &    &     &        &   &   &    \\
+4     & S6  &     &    & R3 &     &        &   & 5 &    \\
+5     &     &     &    & S7 &     &        &   &   &    \\
+6     &     & S8  &    &    &     &        &   &   &    \\
+7     &     &     &    &    &     & R1     &   &   &    \\
+8     &     &     &    & R5 & S10 &        &   &   & 9  \\
+9     &     &     &    & R2 &     &        &   &   &    \\
+10    & S11 &     &    &    &     &        &   &   &    \\
+11    &     & S12 &    &    &     &        &   &   &    \\
+12    &     &     &    & R5 & S10 &        &   &   & 13 \\
+13    &     &     &    & R4 &     &        &   &   &    \\   
+
+\end{tabular}
+\end{table}
+
+\subsection*{item (d)}
+
+This is a SLR grammar because there are no shift / reduce conflicts in any state as seen when the table is constructed.
+
+\end{document}
