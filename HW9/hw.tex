@@ -1,0 +1,115 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1.5cm,bmargin=1.5cm,lmargin=1.5cm,rmargin=1.5cm,columnsep=0.8cm}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fouriernc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{framed}
+\tolerance=1000
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{minted}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,positioning,fit,shapes}
+ 
+\begin{document}
+
+\begin{center}
+\huge EECE7398 --- Compilers
+
+Assignment 9
+
+\vskip1cm
+
+\normalsize\ttfamily Bruno S M M Morais <soutomaiormunizmo.b@husky.neu.edu>
+
+All code can be found on \url{https://github.com/brunosmmm/eece7398}
+
+\end{center}
+
+\vskip0.5cm
+
+\section*{Question 2}
+
+LLVM output generated from source file:
+
+\begin{minted}{llvm}
+; ModuleID = 'TestModule'
+
+define void @f() {
+L0:
+  %t0 = alloca i32
+  %t1 = alloca i32
+  %t2 = alloca i32
+  %t3 = load i32* %t0
+  %t4 = icmp sgt i32 %t3, 2
+  br i1 %t4, label %L1, label %L2
+
+L1:                                               ; preds = %L0
+  %t5 = load i32* %t0
+  %t6 = add i32 %t5, 1
+  store i32 %t6, i32* %t1
+  br label %L3
+
+L2:                                               ; preds = %L0
+  %t7 = load i32* %t2
+  %t8 = icmp eq i32 %t7, 0
+  br i1 %t8, label %L4, label %L5
+
+L3:                                               ; preds = %L5, %L1
+  store i32 1, i32* %t2
+  ret void
+
+L4:                                               ; preds = %L2
+  store i32 0, i32* %t1
+  br label %L5
+
+L5:                                               ; preds = %L4, %L2
+  br label %L3
+}
+\end{minted}
+
+\pagebreak
+
+Running opt with \texttt{cat test2.ll | opt -load ./reaching-def.so -reachingDef}, output:
+
+\begin{verbatim}
+Pass on function f
+GEN for L5 = { }
+GEN for L4 = { }
+GEN for L3 = { }
+GEN for L2 = { t7 t8 }
+GEN for L1 = { t5 t6 }
+GEN for L0 = { t0 t1 t2 t3 t4 }
+Algorithm iterations: 3
+Block L5: 
+IN = { t0 t1 t2 t3 t4 t7 t8 }
+OUT = { t0 t1 t2 t3 t4 t7 t8 }
+Block L4: 
+IN = { t0 t1 t2 t3 t4 t7 t8 }
+OUT = { t0 t1 t2 t3 t4 t7 t8 }
+Block L3: 
+IN = { t0 t1 t2 t3 t4 t5 t6 t7 t8 }
+OUT = { t0 t1 t2 t3 t4 t5 t6 t7 t8 }
+Block L2: 
+IN = { t0 t1 t2 t3 t4 }
+OUT = { t0 t1 t2 t3 t4 t7 t8 }
+Block L1: 
+IN = { t0 t1 t2 t3 t4 }
+OUT = { t0 t1 t2 t3 t4 t5 t6 }
+Block L0: 
+IN = { }
+OUT = { t0 t1 t2 t3 t4 }
+\end{verbatim}
+
+The results observed are coherent with manual analysis of the LLVM code. In this case the algorithm goes through 3 iterations because there are nested control flow statements (\textsc{If}s) in the test code.
+
+\end{document}
